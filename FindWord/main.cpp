@@ -1,52 +1,30 @@
 #include <iostream>
 #include <fstream>
 
-int main() {
+//INPUT: std::string wrd -> STRING TO BE FOUND IN THE DICTIOANRY
+//OUTPUT: bool found -> RETURNS IF THE WORD IS FOUND(true: word found/false: word not found)
+bool FindWord(std::string wrd) {
+
+    bool found = false;
 
     //INPUT DICTIONARY
     std::ifstream dict("words_alpha.txt");
-    if(!dict){std::cerr << "ERROR INPUT NOT FOUND"; return 1;}
+    if(!dict){std::cerr << "ERROR INPUT NOT FOUND"; return (found);} //ERROR READING DICTIONARY
     std::cout << "Reading file: words_alpha.txt\n";
 
+    std::string tmp; //tmp: reading the words of the dictionary
 
-    std::string word; //Palabra a buscar
-    std::string tmp; //tmp: lectura de las palabras del diccionario
-    int found;
-
-    //ENTER WORD TO BE FOUND
-    //while(strcmp(word,"a")!=0) {
-      //  memset(word, 0, 50);
-        std::cout << "Word:? ";
-        std::cin >> word;
-
-        auto start = std::chrono::steady_clock::now();
-        if(int(word[0])>=65 && int(word[0])<=90){word[0]=::tolower(word[0]);}
-        std::cout << "word: " << word << "\n" ;
-        found=0;
-        while (!dict.eof()) { //Mientras no acabe el dictionario
-            dict >> tmp; //Leer palabra x palabra
-            if(tmp.length()!=word.length() || tmp[0]!=word[0]) continue;
-            std::cout << "TMP: " << tmp << "\n";
-            if (tmp == word) { //Comparar palabra puesta (word) vs. Palababra dictionario (tmp)
-                found = 1;
-                break;
-            }
+    //Find if the first letter is a capital letter using ASCII code (ASCII:'A' = 65/ ASCII:'Z' = 90)
+    if(int (wrd[0])>=65 && int (wrd[0])<=90) {wrd[0]=::tolower( wrd[0]);}
+    while (!dict.eof()) { //while there is text to be read
+        dict >> tmp; //reading word by word
+        if(tmp.length()!= wrd.length() || tmp[0]!=wrd[0]) continue;
+        if (tmp == wrd) { //Compare input word (word) vs. Dictionary words (tmp)
+            found = true; //word is in the dictionary
+            break;
         }
+    }
 
-        switch (found) {
-            case 0:
-                std::cout << word << " is not in the dictionary\n";
-                break;
-            case 1:
-                std::cout << word << " is in the dictionary\n";
-                break;
-            default: break;
-        }
-   // }
-
-    dict.close();
-    auto stop = std::chrono::steady_clock::now();
-    auto diff = stop-start;
-    std::cout << std::chrono::duration <double, std::milli> (diff).count() << " ms" << "\n";
-    return 0;
+    dict.close(); //Close dictionary
+    return found; //return bool value
 }
