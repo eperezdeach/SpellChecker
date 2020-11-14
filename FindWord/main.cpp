@@ -9,26 +9,44 @@ int main() {
     std::cout << "Reading file: words_alpha.txt\n";
 
 
-    char word[50]; //Palabra a buscar
-    char tmp[50]; //tmp: lectura de las palabras del diccionario
-    int found=0;
+    std::string word; //Palabra a buscar
+    std::string tmp; //tmp: lectura de las palabras del diccionario
+    int found;
 
     //ENTER WORD TO BE FOUND
-    std::cout << "Word:? "; std::cin >> word;
+    //while(strcmp(word,"a")!=0) {
+      //  memset(word, 0, 50);
+        std::cout << "Word:? ";
+        std::cin >> word;
 
-    while(!dict.eof()){ //Mientras no acabe el dictionario
-        dict >> tmp; //Leer palabra x palabra
-        if(strcmp(word,tmp)==0){ //Comparar palabra puesta (word) vs. Palababra dictionario (tmp)
-            found = 1;
-            break;
+        auto start = std::chrono::steady_clock::now();
+        if(int(word[0])>=65 && int(word[0])<=90){word[0]=::tolower(word[0]);}
+        std::cout << "word: " << word << "\n" ;
+        found=0;
+        while (!dict.eof()) { //Mientras no acabe el dictionario
+            dict >> tmp; //Leer palabra x palabra
+            if(tmp.length()!=word.length() || tmp[0]!=word[0]) continue;
+            std::cout << "TMP: " << tmp << "\n";
+            if (tmp == word) { //Comparar palabra puesta (word) vs. Palababra dictionario (tmp)
+                found = 1;
+                break;
+            }
         }
-    }
 
-    switch (found) {
-        case 0: std::cout << word << " is not in the dictionary"; break;
-        case 1: std::cout << word << " is in the dictionary"; break;
-    }
+        switch (found) {
+            case 0:
+                std::cout << word << " is not in the dictionary\n";
+                break;
+            case 1:
+                std::cout << word << " is in the dictionary\n";
+                break;
+            default: break;
+        }
+   // }
 
-
+    dict.close();
+    auto stop = std::chrono::steady_clock::now();
+    auto diff = stop-start;
+    std::cout << std::chrono::duration <double, std::milli> (diff).count() << " ms" << "\n";
     return 0;
 }
