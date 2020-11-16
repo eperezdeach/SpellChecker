@@ -1,7 +1,6 @@
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <utility>
+//
+// Created by Emilio Pérez De Acha on 11/16/20.
+//
 
 /*Cap2Low: convert the word's letter from capital letter to lower case
  * INPUT: std::string -> STRING THAT WILL BE CONVERTED TO LOWER CASE
@@ -34,7 +33,7 @@ std::string DelSpecChar(std::string wrd) {
         }
     }
 
-    if (tmp.length()==0){tmp=wrd;}//if the word is all spec chars, return wrd
+    //if (tmp.length()==0){tmp=wrd;}//if the word is all spec chars, return wrd
     return tmp;
 }
 
@@ -44,21 +43,24 @@ std::string DelSpecChar(std::string wrd) {
  */
 bool IsNum (const std::string wrd)
 {
+    int l=wrd.length();
+    bool num=true;
     for (auto it = wrd.cbegin(); it != wrd.end();++it){ //iterate wrd's chars
         if (int(*it)< 48 || int(*it) > 57 ) //Check if it is not a number
         {
-            return false; //no es num
+            num = false; //no es num
+            break;
         }
 
     }
-
-    return true; //si es un num
+    if(wrd[l-1]=='s'){num = true;}
+    return num; //si es un num
 }
 
 /* CONTRACCIONOK: Search if the word the contraction is correct
- * INPUT: std::string -> WORD THAT WILL BE CHECKED FOR CONTRACTION
- * OUTPUT: std::string <- RETURNS THE WORD WITHOUT THE CONTRACTION
- */
+* INPUT: std::string -> WORD THAT WILL BE CHECKED FOR CONTRACTION
+        * OUTPUT: std::string <- RETURNS THE WORD WITHOUT THE CONTRACTION
+*/
 std::string ContraccionOK (std::string word)
 {
     //Separo pre y post apostrofe
@@ -76,7 +78,7 @@ std::string ContraccionOK (std::string word)
     bool contrOK = false;//variable mia interna de control, 0 mal 1 bien
     //Caso 1: apostrofe colocado en pos incorrecta --> PALABRA MAL
     if (contr.length() > 2) std::cout <<"Incorrect \n";
-    //Caso 2: apostrofe en antepenúltima posicion.
+        //Caso 2: apostrofe en antepenúltima posicion.
     else if (contr.length() == 2){
         std::vector <std::string> lst_2 = {"re","ll","ve"};
         for (const auto& c: lst_2)
@@ -134,59 +136,3 @@ bool WordContr (const std::string word){
     }
     return contr;
 }
-
-/* FindWord: Search for the word in the dictionary
- * INPUT: std::string wrd -> STRING TO BE FOUND IN THE DICTIOANRY
- * OUTPUT: bool found -> RETURNS IF THE WORD IS FOUND(true: word found/false: word not found)
- */
-bool FindWord(std::string wrd) {
-
-    bool found = false; //found: check if wrd is in the dictionary
-    bool num; //num: check if wrd is a num
-    bool cntr; //cntr: check if the wrd has a contraction
-
-    wrd = DelSpecChar(wrd);//delete spe. chars. of wrd
-    num = IsNum(wrd);
-    if(num) {
-        return true;
-    }
-    wrd = Cap2Low(wrd);//make wrd to lower cases
-    cntr = WordContr(wrd);
-    if (cntr){
-        wrd = ContraccionOK(wrd);//return wrd without contraction
-    }
-
-    //check if wrd is only spec char
-    if(wrd.length()==1){
-        std::vector<char> specChars;//specChars: vector of all special chars
-        for (int i=33; i<=64; ++i){//loop of spec chars in ASCII code
-            specChars.push_back(char(i));//add spec char to specChars
-        }
-        for(auto w:specChars){//loop specChars' chars
-            if(w==wrd[0]){//check if wrd is a specChars
-                return true;
-            }
-        }
-    }
-
-    //INPUT DICTIONARY
-    std::ifstream dict("words_alpha.txt");
-    if(!dict){std::cerr << "ERROR INPUT NOT FOUND"; return (found);} //ERROR READING DICTIONARY
-    std::string dict_wrd; //dict_wrd: reading the words of the dictionary
-
-    while (!dict.eof()) { //while there is text to be read
-        dict >> dict_wrd; //reading word by word
-        if(dict_wrd.length()!= wrd.length() || dict_wrd[0]!=wrd[0]) continue;
-        if (dict_wrd == wrd) { //Compare input word (word) vs. Dictionary words (tmp)
-            found = true; //word is in the dictionary
-            break;
-        }
-    }
-
-    dict.close();//Close dictionary
-
-
-    return found; //return if word is dictionary
-}
-
-
